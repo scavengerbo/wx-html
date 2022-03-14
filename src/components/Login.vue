@@ -10,7 +10,7 @@
               name="用户名"
               label="用户名"
               placeholder="用户名"
-              :rules="[{ required: true, message: '请填写用户名' }]"
+              :rules="[{ required: true, message: account.usermessage }]"
             />
             <van-field
               v-model="account.pwd"
@@ -18,7 +18,7 @@
               name="密码"
               label="密码"
               placeholder="密码"
-              :rules="[{ required: true, message: '请填写密码' }]"
+              :rules="[{ required: account.pwdrule, message: account.pwdmessage }]"
             />
           </van-cell-group>
           <div style="margin: 16px;">
@@ -37,13 +37,17 @@
 <script>
 // 引入ssth.js  好调用里面的接口
 import {requestLogin} from '../api/ssth'
+import {Dialog} from 'vant'
 export default {
   name: 'Login',
   data () {
     return {
       account: {
         username: '',
-        pwd: ''
+        pwd: '',
+        usermessage: '请填写用户名',
+        pwdmessage: '请填写密码',
+        pwdrule: true
       }
     }
   },
@@ -57,30 +61,19 @@ export default {
     },
     handleLogin () {
       let loginParams = {name: this.account.username, passwd: this.account.pwd}
-      // let test = 'testlogin'
       // 调用函数  传递参数 获取结果
-      console.log(loginParams)
       requestLogin(loginParams).then((data) => {
         console.log(data)
-        console.log(typeof data.body)
-        if (data.body) {
-          this.$router.push({name: 'hello', params: loginParams})
+        console.log(data.status)
+        if (data.status === 0) {
+          this.$router.push({name: 'hello', params: data})
+        } else {
+          Dialog.alert({
+            message: '密码错误'
+          }).then(() => {
+            // on close
+          })
         }
-        // let userList = data.data
-        // console.log(userList)
-
-        // if (userList.length !== 0) {
-        //   // 登录成功
-        //   //  console.log(userList[0].userName)
-        //   // sessionStorage.setItem('users', JSON.stringify(userList[0]))
-        //   // 用vue路由跳转到后台主界面
-        //   this.$router.push({path: '/hello', query: loginParams})
-        // } else {
-        //   this.$message({
-        //     message: '登录失败',
-        //     type: 'error'
-        //   })
-        // }
       })
     }
   }
