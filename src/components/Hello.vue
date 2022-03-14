@@ -6,7 +6,7 @@
     <div>
       <span style="font-family: 新宋体">{{this.users.body.username}}</span>
     </div>
-    <van-cell title="代办事项" is-link value="26" style="margin-top: 2rem" inset=true @click="agencyMatters"/>
+    <van-cell title="代办事项" is-link :value="users.body.agencyMatters.length" title-style="text-align:left;" style="margin-top: 2rem" inset=true @click="agencyMatters"/>
     <div style="margin-top: 2rem">
       <van-grid :border="false" :column-num="3" square >
         <van-grid-item style="border-right: 1.5px solid #DFE9FB">
@@ -34,10 +34,16 @@ export default {
     return {
       users: {
         body: {
-          cid: '1',
+          agencyMatters: [
+            {
+              approver: '2',
+              wid: '1'
+            }
+          ],
           cname: '太原理工',
-          userid: '1',
-          username: '王鹏'
+          userid: '2',
+          cid: '1',
+          username: '刘波'
         }
       },
       tdd: ['我发起的', '抄送', '我处理的', '草稿']
