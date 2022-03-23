@@ -11,8 +11,12 @@ import 'element-ui/lib/theme-chalk/index.css'
 import Vant from 'vant'
 import 'vant/lib/index.css'
 
+import mandMobile from 'mand-mobile'
+import 'mand-mobile/lib/mand-mobile.css'
+
 Vue.use(Vant)
 
+Vue.use(mandMobile)
 
 Vue.config.productionTip = false
 Vue.use(ElementUI)
