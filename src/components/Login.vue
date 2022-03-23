@@ -2,8 +2,8 @@
   <div style="margin:auto">
     <div style="margin-top: 8rem">
       <div style="width: 20rem;margin: auto">
-        <h3>wp管理系统</h3>
-        <van-form :model='account' style="margin-top: 4rem">
+        <h3 style="text-align:center;">wp管理系统</h3>
+        <van-form :model='account' style="margin-top: 4rem;">
           <van-cell-group inset>
             <van-field
               v-model="account.username"
@@ -82,6 +82,6 @@ export default {
 
 <style>
   body {
-    background: #DFE9FB;
+    background: #f6f7f9;
   }
 </style>

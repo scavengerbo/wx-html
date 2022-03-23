@@ -1,10 +1,10 @@
 <template>
-  <div style="margin:auto">
+  <div>
     <div style="width: 80%;margin: auto">
-      <div>
-        <h3>请假工单</h3>
-        <van-form :model='account' style="margin-top: 2rem">
-          <van-cell-group inset>
+      <div style="margin-top: 2rem">
+        <h3 style="text-align:center;">请假工单</h3>
+        <van-form :model='account' style="margin-top: 2rem;">
+          <van-cell-group inset style="box-shadow: 0 8px 12px #ebedf0;">
             <van-field
               v-for="(item,index) in agencyMatters" :key="index"
               v-model="item.vl"
@@ -12,24 +12,31 @@
               :label="item.name"
               :placeholder="item.name"
               :rules="[{ required: true, message: account.usermessage }]"
-              @focus="inputFocus(item)"
+              @focus="inputFocus(item,index)"
+              :readonly="item.readonly"
             />
           </van-cell-group>
         </van-form>
-        <div style="margin: 16px;">
-          <van-button round block type="primary" @click="handleLogin">
+        <div style="height: 1rem"></div>
+        <div style="padding-top: 1rem;display:flex;justify-content: space-around">
+          <van-button plain round  type="info" @click="submitForm" style="width: 40%;box-shadow: 0 8px 12px #ebedf0;">
+            保存
+          </van-button>
+          <van-button plain round  type="primary" @click="submitForm" style="width: 40%;box-shadow: 0 8px 12px #ebedf0;">
             提交
           </van-button>
         </div>
+        <van-popup v-model="isDatePickerShow" position="bottom">
         <van-datetime-picker
           v-model="currentDate"
           type="datetime"
-          title="选择完整时间"
+          title="年月日时分"
           :min-date="minDate"
           :max-date="maxDate"
-          v-show="isDatePickerShow"
-          @confirm="isDatePickerShow=false"
+          @confirm="dateConfirm"
+          @cancel="isDatePickerShow = false"
         />
+        </van-popup>
 
         <van-popup v-model="showPicker" position="bottom">
           <van-picker
@@ -55,85 +62,75 @@ export default {
         pwdmessage: '请填写密码',
         pwdrule: true
       },
-      result: '',
       columns: ['杭州', '宁波', '温州', '嘉兴', '湖州'],
       minDate: new Date(2020, 0, 1),
-      maxDate: new Date(2025, 10, 1),
+      maxDate: new Date(2099, 10, 1),
       currentDate: new Date(), // 年月日选择器默认时间
       showPicker: false,
       isDatePickerShow: false, // 是否拉起年月日选择器
-      isDatePickerShowMore: false, // 是否拉起时间选择器
-      datePickerValue: '', // 年月日选择器选中的值
-      currentDateMore: new Date(), // 时间选择器默认时间
-      datePickerValueMore: '', // 时间选择器选中的值
-      userForm: {}, // 最后提交的表单--注册触发--暂时未使用
       agencyItem: {}, // 当前选择的元素信息
 
-      agencyMatters: [{ name: '请假人', order: 0, type: 1, vl: '某某' },
-        { name: '开始时间', order: 1, type: 3, vl: '2022-03-22' }, { name: '结束时间', order: 2, type: 4, vl: '2022-03-23 00:00' }, { name: '原因', order: 3, type: 1, vl: '没有原因' }]
+      agencyMatters: [{ name: '请假人', order: 0, type: 1, vl: '某某', readonly: false },
+        { name: '开始时间', order: 1, type: 3, vl: '2022-03-22', readonly: true },
+        { name: '结束时间', order: 2, type: 4, vl: '2022-03-23 00:00', readonly: true },
+        { name: '原因', order: 3, type: 1, vl: '没有原因', readonly: true },
+        { name: '审批人', order: 4, type: 5, vl: this.value, readonly: true }]
     }
   },
-  created () {
-    // 设置年月日选择器默认值
-    this.datePickerValue = this.timeAdd0(new Date().getFullYear()) + '-' + this.timeAdd0((new Date().getMonth() + 1)) + '-' + this.timeAdd0((new Date().getDate()))
-    // 设置时间选择器默认值
-    this.datePickerValueMore = this.timeAdd0(new Date().getFullYear()) + '-' + this.timeAdd0((new Date().getMonth() + 1)) + '-' + this.timeAdd0((new Date().getDate())) + ' ' + this.timeAdd0((new Date().getHours())) + ':' + this.timeAdd0((new Date().getMinutes()))
-  },
-  mounted () {
-    // 可以在这查询agencyMatters
-  },
   methods: {
-    // 年月日选择器 赋值
-    onDatePickerConfirm (columnsValue) {
-      this.agencyItem.vl = this.$refs.datePicker.getFormatDate('yyyy-MM-dd')
-    },
-    // 时间选择器 赋值
-    onDatePickerConfirmMore (columnsValue) {
-      this.agencyItem.vl = this.$refs.datePickerMore.getFormatDate('yyyy-MM-dd hh:mm')
-    },
     // input触发时判断
-    inputFocus (item) {
+    inputFocus (item, index) {
       console.log('inputFocus==>>')
       this.agencyItem = item
+      // item.vl = 'a'
       if (item.type === 3) {
         // 日期选择器
         this.isDatePickerShow = true
       } else if (item.type === 4) {
         // 时间选择器
         this.isDatePickerShowMore = true
-      } else {
+      } else if (item.type === 5) {
         this.showPicker = true
       }
     },
-    // 注册
     submitForm () {
       // var params = {}
       // 入参--提交
       console.log('agencyMatters==>>>', this.agencyMatters)
     },
-    testaa () {
-      console.log(this.currentDate)
-    },
     onConfirm (value) {
+      this.showPicker = false
       console.log(value)
-    }
-  },
-  computed: {
-    // 日期格式规范
-    timeAdd0: function () {
-      return function (str) {
-        var arr = str + ''
-        if (arr.length <= 1) {
-          arr = '0' + arr
-        }
-        return arr
+      this.agencyItem.vl = value
+    },
+    dateConfirm (value) {
+      this.isDatePickerShow = false
+      console.log(this.getDateYS(value))
+      console.log(this.getDateYD(value))
+      console.log(this.getDateYS(new Date()))
+      this.agencyItem.vl = this.getDateYS(value)
+    },
+    timeAdd0 (str) {
+      var arr = str + ''
+      if (arr.length <= 1) {
+        arr = '0' + arr
       }
+      return arr
+    },
+    getDateYS (date) {
+      return this.timeAdd0(date.getFullYear()) + '-' +
+        this.timeAdd0((date.getMonth() + 1)) + '-' + this.timeAdd0((date.getDate())) +
+        ' ' + this.timeAdd0((date.getHours())) + ':' + this.timeAdd0((date.getMinutes()))
+    },
+    getDateYD (date) {
+      return this.timeAdd0(date.getFullYear()) + '-' +
+        this.timeAdd0((date.getMonth() + 1)) + '-' + this.timeAdd0((date.getDate()))
     }
   }
 }
 </script>
 <style>
 body {
-  background: #DFE9FB;
+  background: #f6f7f9;
 }
 </style>
