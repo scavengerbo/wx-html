@@ -3,7 +3,7 @@
     <div style="width: 80%;margin: auto">
       <div style="margin-top: 2rem">
         <h3 style="text-align:center;">请假工单</h3>
-        <van-form :model='account' style="margin-top: 2rem;">
+        <van-form style="margin-top: 2rem;">
           <van-cell-group inset style="box-shadow: 0 8px 12px #ebedf0;">
             <van-field
               v-for="(item,index) in agencyMatters" :key="index"
@@ -11,9 +11,18 @@
               :name="item.name"
               :label="item.name"
               :placeholder="item.name"
-              :rules="[{ required: true, message: account.usermessage }]"
+              :rules="[{ required: true, message: item.name }]"
               @focus="inputFocus(item,index)"
-              :readonly="item.readonly"
+              :readonly="item.readonly == 1 ? true: false"
+            />
+            <van-field
+              v-model="this.permUser.username"
+              name="审批人"
+              label="审批人"
+              placeholder="审批人"
+              :rules="[{ required: true, message: '审批人' }]"
+              @focus="showPicker = true"
+              :readonly="true"
             />
           </van-cell-group>
         </van-form>
@@ -51,31 +60,58 @@
   </div>
 </template>
 <script>
+// import {Dialog} from 'vant'
+// import {workTitle} from '@/api/ssth'
+
+import {workTitle} from '@/api/ssth'
+import {Dialog} from 'vant'
+
 export default {
   name: 'agencyMatters',
-  data () {
+  data: function () {
     return {
-      account: {
-        username: '',
-        pwd: '',
-        usermessage: '请填写用户名',
-        pwdmessage: '请填写密码',
-        pwdrule: true
-      },
-      columns: ['杭州', '宁波', '温州', '嘉兴', '湖州'],
+      users: {},
+      columns: [],
       minDate: new Date(2020, 0, 1),
       maxDate: new Date(2099, 10, 1),
       currentDate: new Date(), // 年月日选择器默认时间
       showPicker: false,
       isDatePickerShow: false, // 是否拉起年月日选择器
       agencyItem: {}, // 当前选择的元素信息
+      agencyMatters: [],
+      twpid: '',
+      permUsers: [],
+      permUser: {}
 
-      agencyMatters: [{ name: '请假人', order: 0, type: 1, vl: '某某', readonly: false },
-        { name: '开始时间', order: 1, type: 3, vl: '2022-03-22', readonly: true },
-        { name: '结束时间', order: 2, type: 4, vl: '2022-03-23 00:00', readonly: true },
-        { name: '原因', order: 3, type: 1, vl: '没有原因', readonly: true },
-        { name: '审批人', order: 4, type: 5, vl: this.value, readonly: true }]
+      // agencyMatters: [{ name: '请假人', order: 0, type: 1, vl: '某某', readonly: false },
+      //   { name: '开始时间', order: 1, type: 3, vl: '2022-03-22', readonly: true },
+      //   { name: '结束时间', order: 2, type: 4, vl: '2022-03-23 00:00', readonly: true },
+      //   { name: '原因', order: 3, type: 1, vl: '没有原因', readonly: true },
+      //   { name: '审批人', order: 4, type: 5, vl: this.value, readonly: true }]
     }
+  },
+  activated () {
+    this.users = JSON.parse(window.sessionStorage.getItem('users'))
+    this.twpid = this.$route.query.twpid
+    console.log(this.users)
+    workTitle({twp_id: this.twpid, userid: this.users.body.userid}).then((data) => {
+      console.log(data)
+      if (data.status === 0) {
+        this.agencyMatters = data.body.workTitle
+        this.permUsers = data.body.permUser
+        this.columns = []
+        for (let i = 0; i < this.permUsers.length; i++) {
+          this.columns.push(this.permUsers[i].uuid + '--' + this.permUsers[i].name)
+        }
+        console.log('this.columns---' + this.columns)
+      } else {
+        Dialog.alert({
+          message: '异常'
+        }).then(() => {
+          // on close
+        })
+      }
+    })
   },
   methods: {
     // input触发时判断
@@ -101,7 +137,8 @@ export default {
     onConfirm (value) {
       this.showPicker = false
       console.log(value)
-      this.agencyItem.vl = value
+      this.permUser = {userid: value.split('--')[0], username: value.split('--')[1]}
+      console.log(this.permUser)
     },
     dateConfirm (value) {
       this.isDatePickerShow = false

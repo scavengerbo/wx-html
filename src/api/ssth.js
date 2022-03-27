@@ -6,6 +6,6 @@ import qs from 'qs'
 axios.defaults.baseURL = '/api'
 
 export const requestLogin = params => { return axios.post('/verifyNameAndPasswd', qs.stringify(params)).then(res => res.data) }
-export const requestRegister = params => { return axios.post('/register', qs.stringify(params)).then(res => res.data) }
-export const insertText = params => { return axios.post('/insertText', qs.stringify(params)).then(res => res.data) }
+export const workList = params => { return axios.post('/workList', qs.stringify(params)).then(res => res.data) }
+export const workTitle = params => { return axios.post('/workTitle', qs.stringify(params)).then(res => res.data) }
 export const selectContent = params => { return axios.post('/selectContent', qs.stringify(params)).then(res => res.data) }

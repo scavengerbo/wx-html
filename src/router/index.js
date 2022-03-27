@@ -3,10 +3,10 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import HelloWorld from '@/components/HelloWorld'
 import Login from '@/components/Login'
-import register from '@/components/register'
 import hello from '@/components/Hello'
 import agencyMatters from '@/components/agencyMatters'
 import ApprovalList from '@/components/ApprovalList'
+import workList from '@/components/workList'
 
 Vue.use(Router)
 
@@ -28,11 +28,6 @@ export default new Router({
       component: HelloWorld
     },
     {
-      path: '/register',
-      name: 'register',
-      component: register
-    },
-    {
       path: '/hello',
       name: 'hello',
       component: hello
@@ -46,6 +41,11 @@ export default new Router({
       path: '/ApprovalList',
       name: 'ApprovalList',
       component: ApprovalList
+    },
+    {
+      path: '/workList',
+      name: 'workList',
+      component: workList
     }
   ]
 })

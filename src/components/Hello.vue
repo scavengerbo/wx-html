@@ -10,18 +10,29 @@
     <div style="margin-top: 2rem">
       <van-grid :border="false" :column-num="3" square >
         <van-grid-item style="border-right: 1.5px solid #DFE9FB">
-          <van-icon name="share-o" />
+          <van-icon size="2rem" name="share-o" />
           <span style="margin-top: 1rem">我发起的</span>
         </van-grid-item>
         <van-grid-item style="border-right: 1.5px solid #DFE9FB;border-left: 1.5px solid #DFE9FB">
-          <van-icon name="sign" />
+          <van-icon size="2rem" name="sign" />
           <span style="margin-top: 1rem">我处理的</span>
         </van-grid-item>
         <van-grid-item style="border-left: 1.5px solid #DFE9FB">
-          <van-icon name="orders-o" />
+          <van-icon size="2rem" name="orders-o" />
           <span style="margin-top: 1rem">草稿</span>
         </van-grid-item>
       </van-grid>
+    </div>
+    <div style="background: white;margin-top: 1rem;padding-left: 0.5rem;padding-top: 0.5rem">
+      <div style="width: 80%;">
+        <h4>常用</h4>
+        <van-grid :border="false" :column-num="3" square >
+          <van-grid-item @click="workList">
+            <van-icon size="2rem" name="add" />
+            <span style="margin-top: 1rem">发起工单</span>
+          </van-grid-item>
+        </van-grid>
+      </div>
     </div>
   </div>
 </template>
@@ -33,18 +44,18 @@ export default {
   data: function () {
     return {
       users: {
-        body: {
-          agencyMatters: [
-            {
-              approver: '2',
-              wid: '1'
-            }
-          ],
-          cname: '太原理工',
-          userid: '2',
-          cid: '1',
-          username: '刘波'
-        }
+        // body: {
+        //   agencyMatters: [
+        //     {
+        //       approver: '2',
+        //       wid: '1'
+        //     }
+        //   ],
+        //   cname: '太原理工',
+        //   userid: '2',
+        //   cid: '1',
+        //   username: '刘波'
+        // }
       },
       tdd: ['我发起的', '抄送', '我处理的', '草稿']
     }
@@ -55,9 +66,9 @@ export default {
   },
   methods: {
     initData () {
-      // this.users = JSON.parse(window.sessionStorage.getItem('users'))
+      this.users = JSON.parse(window.sessionStorage.getItem('users'))
       // this.users = this.$route.params
-      // console.log(this.users)
+      console.log(this.users)
     },
     agencyMatters () {
       console.log(33333333333)
@@ -74,6 +85,9 @@ export default {
       //     })
       //   }
       // })
+    },
+    workList () {
+      this.$router.push({name: 'workList'})
     }
   }
 }
@@ -81,6 +95,6 @@ export default {
 
 <style>
   body {
-    background: #DFE9FB;
+    background: #f6f7f9;
   }
 </style>

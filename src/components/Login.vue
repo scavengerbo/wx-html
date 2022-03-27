@@ -64,8 +64,8 @@ export default {
       // 调用函数  传递参数 获取结果
       requestLogin(loginParams).then((data) => {
         console.log(data)
-        console.log(data.status)
         if (data.status === 0) {
+          sessionStorage.setItem('users', JSON.stringify(data))
           this.$router.push({name: 'hello', params: data})
         } else {
           Dialog.alert({
