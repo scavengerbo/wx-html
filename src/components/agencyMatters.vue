@@ -28,10 +28,10 @@
         </van-form>
         <div style="height: 1rem"></div>
         <div style="padding-top: 1rem;display:flex;justify-content: space-around">
-          <van-button plain round  type="info" @click="submitForm" style="width: 40%;box-shadow: 0 8px 12px #ebedf0;">
+          <van-button plain round  type="info" @click="submitForm(0)" style="width: 40%;box-shadow: 0 8px 12px #ebedf0;">
             保存
           </van-button>
-          <van-button plain round  type="primary" @click="submitForm" style="width: 40%;box-shadow: 0 8px 12px #ebedf0;">
+          <van-button plain round  type="primary" @click="submitForm(1)" style="width: 40%;box-shadow: 0 8px 12px #ebedf0;">
             提交
           </van-button>
         </div>
@@ -45,6 +45,17 @@
           @confirm="dateConfirm"
           @cancel="isDatePickerShow = false"
         />
+        </van-popup>
+        <van-popup v-model="isDatePickerShowMore" position="bottom">
+          <van-datetime-picker
+            v-model="currentDate"
+            type="date"
+            title="年月日时分"
+            :min-date="minDate"
+            :max-date="maxDate"
+            @confirm="dateConfirmD"
+            @cancel="isDatePickerShowMore = false"
+          />
         </van-popup>
 
         <van-popup v-model="showPicker" position="bottom">
@@ -63,8 +74,10 @@
 // import {Dialog} from 'vant'
 // import {workTitle} from '@/api/ssth'
 
-import {workTitle} from '@/api/ssth'
+// import {sumbitWorkOrder, workTitle} from '@/api/ssth'
 import {Dialog} from 'vant'
+import axios from 'axios'
+import {workTitle} from '@/api/ssth'
 
 export default {
   name: 'agencyMatters',
@@ -77,11 +90,13 @@ export default {
       currentDate: new Date(), // 年月日选择器默认时间
       showPicker: false,
       isDatePickerShow: false, // 是否拉起年月日选择器
+      isDatePickerShowMore: false,
       agencyItem: {}, // 当前选择的元素信息
       agencyMatters: [],
       twpid: '',
       permUsers: [],
-      permUser: {}
+      permUser: {},
+      appLevel: 0
 
       // agencyMatters: [{ name: '请假人', order: 0, type: 1, vl: '某某', readonly: false },
       //   { name: '开始时间', order: 1, type: 3, vl: '2022-03-22', readonly: true },
@@ -129,10 +144,56 @@ export default {
         this.showPicker = true
       }
     },
-    submitForm () {
+    submitForm (status) {
       // var params = {}
       // 入参--提交
-      console.log('agencyMatters==>>>', this.agencyMatters)
+      // eslint-disable-next-line camelcase
+      let workparams = {userId: this.users.body.userid,
+        twpId: this.twpid,
+        status: status,
+        workConts: this.agencyMatters,
+        permUserID: this.permUser.userid,
+        appLevel: this.appLevel}
+      console.log('work_params==>>>', workparams)
+      axios({
+        headers: {
+          'Content-Type': 'application/json;charset=UTF-8'
+        },
+        method: 'post',
+        url: '/work/sumbitWorkOrder',
+        data: JSON.stringify(workparams)
+      }).then((data) => {
+        console.log(data)
+        if (data.status === 0) {
+          Dialog.alert({
+            message: '提交成功'
+          }).then(() => {
+            // on close
+          })
+        } else {
+          Dialog.alert({
+            message: '提交失败'
+          }).then(() => {
+            // on close
+          })
+        }
+      })
+      // sumbitWorkOrder(workparams).then((data) => {
+      //   console.log(data)
+      //   if (data.status === 0) {
+      //     Dialog.alert({
+      //       message: '提交成功'
+      //     }).then(() => {
+      //       // on close
+      //     })
+      //   } else {
+      //     Dialog.alert({
+      //       message: '提交失败'
+      //     }).then(() => {
+      //       // on close
+      //     })
+      //   }
+      // })
     },
     onConfirm (value) {
       this.showPicker = false
@@ -142,10 +203,11 @@ export default {
     },
     dateConfirm (value) {
       this.isDatePickerShow = false
-      console.log(this.getDateYS(value))
-      console.log(this.getDateYD(value))
-      console.log(this.getDateYS(new Date()))
       this.agencyItem.vl = this.getDateYS(value)
+    },
+    dateConfirmD (value) {
+      this.isDatePickerShowMore = false
+      this.agencyItem.vl = this.getDateYD(value)
     },
     timeAdd0 (str) {
       var arr = str + ''
