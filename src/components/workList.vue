@@ -10,7 +10,7 @@
         >
 <!--          <van-cell v-for="item in list" :key="item" :title="item" />-->
           <van-cell v-for="(item, index) in list" :key="index" :title="item.workName" is-link title-style="text-align:left;"
-                    style="margin-top: 0.5rem;padding-top: 0.5rem" inset=true @click="agencyMatters(item.twp_id)"
+                    style="margin-top: 0.5rem;padding-top: 0.5rem" inset=true @click="agencyMatters(item)"
                     value="发起"/>
         </van-list>
     </div>
@@ -69,7 +69,7 @@ export default {
     },
     agencyMatters (item) {
       console.log(item)
-      this.$router.push({path: '/agencyMatters', query: {twpid: String(item)}})
+      this.$router.push({path: '/agencyMatters', query: {twpid: String(item.twp_id), workName: String(item.workName)}})
     },
     onSearch (val) {
       this.list = []

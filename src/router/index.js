@@ -7,6 +7,7 @@ import hello from '@/components/Hello'
 import agencyMatters from '@/components/agencyMatters'
 import ApprovalList from '@/components/ApprovalList'
 import workList from '@/components/workList'
+import approvalWork from '../components/approvalWork'
 
 Vue.use(Router)
 
@@ -46,6 +47,11 @@ export default new Router({
       path: '/workList',
       name: 'workList',
       component: workList
+    },
+    {
+      path: '/approvalWork',
+      name: 'approvalWork',
+      component: approvalWork
     }
   ]
 })

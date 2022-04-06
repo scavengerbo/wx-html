@@ -46,11 +46,11 @@
               <div class="value">{{approval.department}}</div>
             </div>
             <div class="content-item">
-              <div class="label">申请说明</div>
-              <div class="value">{{approval.applyInstruction}}</div>
+              <div class="detail" @click="approvalWork(approval)">详情</div>
             </div>
-            <div class="content-item">
-              <div class="detail">详情</div>
+            <div class="content-item" v-if="approval.applyInstruction!=''">
+              <div class="label">榜单</div>
+              <div class="detail">{{approval.applyInstruction}}</div>
             </div>
           </div>
         </van-collapse-item>
@@ -61,8 +61,10 @@
 
 <script>
 export default {
-  data () {
+  name: 'ApprovalList',
+  data: function () {
     return {
+      users: {},
       value: '', // 搜索关键字
       dropMenuValue: 0, // 默认排序
       dropMenuValue2: 0, // 审批状态
@@ -78,128 +80,57 @@ export default {
         { text: '已审批', value: 3 }
       ],
       approvalList: [
-        {
-          id: 1,
-          title: '资产领用申请',
-          voucher: 'RQ132123123123',
-          applicant: '刘大波1',
-          applyTime: '2019-07-17',
-          company: '北京数字认证',
-          department: '密码设备产品',
-          applyInstruction: '申请说明1111',
-          approvalStatus: 0
-        },
-        {
-          id: 2,
-          title: '资产领用申请',
-          voucher: 'RQ132123123123',
-          applicant: '刘大波1',
-          applyTime: '2019-07-17',
-          company: '北京数字认证',
-          department: '密码设备产品',
-          applyInstruction: '申请说明1111',
-          approvalStatus: 1
-        },
-        {
-          id: 3,
-          title: '资产领用申请',
-          voucher: 'RQ132123123123',
-          applicant: '刘大波1',
-          applyTime: '2019-07-17',
-          company: '北京数字认证',
-          department: '密码设备产品',
-          applyInstruction: '申请说明1111',
-          approvalStatus: 0
-        },
-        {
-          id: 4,
-          title: '资产领用申请',
-          voucher: 'RQ132123123123',
-          applicant: '刘大波1',
-          applyTime: '2019-07-17',
-          company: '北京数字认证',
-          department: '密码设备产品',
-          applyInstruction: '申请说明1111',
-          approvalStatus: 2
-        },
-        {
-          id: 5,
-          title: '资产领用申请',
-          voucher: 'RQ132123123123',
-          applicant: '刘大波1',
-          applyTime: '2019-07-17',
-          company: '北京数字认证',
-          department: '密码设备产品',
-          applyInstruction: '申请说明1111',
-          approvalStatus: 2
-        },
-        {
-          id: 6,
-          title: '资产领用申请',
-          voucher: 'RQ132123123123',
-          applicant: '刘大波1',
-          applyTime: '2019-07-17',
-          company: '北京数字认证',
-          department: '密码设备产品',
-          applyInstruction: '申请说明1111',
-          approvalStatus: 1
-        },
-        {
-          id: 7,
-          title: '资产领用申请',
-          voucher: 'RQ132123123123',
-          applicant: '刘大波1',
-          applyTime: '2019-07-17',
-          company: '北京数字认证',
-          department: '密码设备产品',
-          applyInstruction: '申请说明1111',
-          approvalStatus: 1
-        },
-        {
-          id: 8,
-          title: '资产领用申请',
-          voucher: 'RQ132123123123',
-          applicant: '刘大波1',
-          applyTime: '2019-07-17',
-          company: '北京数字认证',
-          department: '密码设备产品',
-          applyInstruction: '申请说明1111',
-          approvalStatus: 0
-        },
-        {
-          id: 9,
-          title: '资产领用申请',
-          voucher: 'RQ132123123123',
-          applicant: '刘大波1',
-          applyTime: '2019-07-17',
-          company: '北京数字认证',
-          department: '密码设备产品',
-          applyInstruction: '申请说明1111',
-          approvalStatus: 1
-        }
+        // {
+        //   id: 1,
+        //   title: '资产领用申请',
+        //   voucher: 'RQ132123123123',
+        //   applicant: '刘大波1',
+        //   applyTime: '2019-07-17',
+        //   company: '北京数字认证',
+        //   department: '密码设备产品',
+        //   applyInstruction: '申请说明1111',
+        //   approvalStatus: 0
+        // }
       ], // 审批列表数据
-      activeNames: [] // 绑定的被打开的折叠面板
+      activeNames: [], // 绑定的被打开的折叠面板
+      approval: {}
+    }
+  },
+  activated () {
+    this.users = JSON.parse(window.sessionStorage.getItem('users'))
+    console.log(this.users)
+    this.approvalList = this.users.body.agencyMatters
+    console.log(this.approvalList)
+  },
+  methods: {
+    approvalWork (approval) {
+      this.approval = approval
+      this.$router.push({name: 'approvalWork', params: {approval: JSON.stringify(this.approval)}})
     }
   },
   filters: {
     getStatusType (status) {
       switch (status) {
-        case 0:
+        case '0':
           return 'warning'
-        case 1:
+        case '1':
           return 'primary'
-        case 2:
+        case '2':
           return 'success'
+        case '3':
+          return 'warning'
       }
     },
     getStatusText (status) {
       switch (status) {
-        case 0:
-          return '待审批'
-        case 1:
+        case '0':
+          return '草稿'
+        case '1':
           return '审批中'
-        case 2:
-          return '已审批'
+        case '2':
+          return '审批结束'
+        case '3':
+          return '删除'
       }
     }
   }

@@ -2,7 +2,7 @@
   <div>
     <div style="width: 80%;margin: auto">
       <div style="margin-top: 2rem">
-        <h3 style="text-align:center;">请假工单</h3>
+        <h3 style="text-align:center;">{{ this.workName }}</h3>
         <van-form style="margin-top: 2rem;">
           <van-cell-group inset style="box-shadow: 0 8px 12px #ebedf0;">
             <van-field
@@ -94,6 +94,7 @@ export default {
       agencyItem: {}, // 当前选择的元素信息
       agencyMatters: [],
       twpid: '',
+      workName: '',
       permUsers: [],
       permUser: {},
       appLevel: 0
@@ -108,6 +109,7 @@ export default {
   activated () {
     this.users = JSON.parse(window.sessionStorage.getItem('users'))
     this.twpid = this.$route.query.twpid
+    this.workName = this.$route.query.workName
     console.log(this.users)
     workTitle({twp_id: this.twpid, userid: this.users.body.userid}).then((data) => {
       console.log(data)
@@ -163,8 +165,8 @@ export default {
         url: '/work/sumbitWorkOrder',
         data: JSON.stringify(workparams)
       }).then((data) => {
-        console.log(data)
-        if (data.status === 0) {
+        console.log(data.data)
+        if (data.data.status === 0) {
           Dialog.alert({
             message: '提交成功'
           }).then(() => {

@@ -43,25 +43,11 @@ export default {
   name: 'hello',
   data: function () {
     return {
-      users: {
-        // body: {
-        //   agencyMatters: [
-        //     {
-        //       approver: '2',
-        //       wid: '1'
-        //     }
-        //   ],
-        //   cname: '太原理工',
-        //   userid: '2',
-        //   cid: '1',
-        //   username: '刘波'
-        // }
-      },
+      users: {},
       tdd: ['我发起的', '抄送', '我处理的', '草稿']
     }
   },
   activated () {
-    // window.alert(111)
     this.initData()
   },
   methods: {
@@ -71,7 +57,7 @@ export default {
       console.log(this.users)
     },
     agencyMatters () {
-      console.log(33333333333)
+      this.$router.push({name: 'ApprovalList'})
       // requestLogin().then((data) => {
       //   console.log(data)
       //   console.log(data.status)

@@ -63,7 +63,6 @@ export default {
       let loginParams = {name: this.account.username, passwd: this.account.pwd}
       // 调用函数  传递参数 获取结果
       requestLogin(loginParams).then((data) => {
-        console.log(data)
         if (data.status === 0) {
           sessionStorage.setItem('users', JSON.stringify(data))
           this.$router.push({name: 'hello', params: data})
