@@ -28,28 +28,30 @@
                                 :rules="[{ required: true, message: item.name }]"
                                 :readonly="item.readonly == 1 ? true: false"
                               />
-                              <div v-if="approval.permflag === 'Y'">
-                                <van-field
-                                  v-model="permResult"
-                                  name="审批结果"
-                                  label="审批结果"
-                                  placeholder="审批结果"
-                                  :rules="[{ required: true, message: '审批结果' }]"
-                                  @focus="permShowPicker = true"
-                                  :readonly="true"
-                                />
-                                <div v-if="permResult === '通过'">
+                              <div v-if="approval.workflag === 'W'">
                                   <van-field
-                                    v-model="permUser.username"
-                                    name="下一级审批人"
-                                    label="下一级审批人"
-                                    placeholder="下一级审批人"
-                                    :rules="[{ required: true, message: '下一级审批人' }]"
-                                    @focus="showPickerM(approval)"
+                                    v-model="permResult"
+                                    name="审批结果"
+                                    label="审批结果"
+                                    placeholder="审批结果"
+                                    :rules="[{ required: true, message: '审批结果' }]"
+                                    @focus="permShowPicker = true"
                                     :readonly="true"
                                   />
+                                <div v-if="approval.permflag === 'Y'">
+                                  <div v-if="permResult === '通过'">
+                                    <van-field
+                                      v-model="permUser.username"
+                                      name="下一级审批人"
+                                      label="下一级审批人"
+                                      placeholder="下一级审批人"
+                                      :rules="[{ required: true, message: '下一级审批人' }]"
+                                      @focus="showPickerM(approval)"
+                                      :readonly="true"
+                                    />
+                                  </div>
                                 </div>
-                                <van-button plain round  type="primary" style="width: 100%;margin-top: 0.5rem">
+                                <van-button plain round  type="primary" style="width: 100%;margin-top: 0.5rem" @click="submit(approval)">
                                   提交
                                 </van-button>
                               </div>
@@ -82,6 +84,8 @@
 
 <script>
 import {approvalWork} from '../api/ssth'
+import axios from 'axios'
+import {Dialog} from 'vant'
 
 export default {
   name: 'approvalWork',
@@ -138,6 +142,33 @@ export default {
     peronConfirm (value) {
       this.permShowPicker = false
       this.permResult = value
+    },
+    submit (approval) {
+      let param = {'approval': approval, 'permResult': this.permResult === '通过' ? 1 : 2, 'permUser': this.permUser}
+      console.log(param)
+      axios({
+        headers: {
+          'Content-Type': 'application/json;charset=UTF-8'
+        },
+        method: 'post',
+        url: '/work/sumbitPerm',
+        data: JSON.stringify(param)
+      }).then((data) => {
+        console.log(data.data)
+        if (data.data.status === 0) {
+          Dialog.alert({
+            message: '提交成功'
+          }).then(() => {
+            // on close
+          })
+        } else {
+          Dialog.alert({
+            message: '提交失败'
+          }).then(() => {
+            // on close
+          })
+        }
+      })
     }
   },
   filters: {

@@ -9,7 +9,7 @@
     <van-cell title="代办事项" is-link :value="users.body.agencyMatters.length" title-style="text-align:left;" style="margin-top: 2rem" inset=true @click="agencyMatters"/>
     <div style="margin-top: 2rem">
       <van-grid :border="false" :column-num="3" square >
-        <van-grid-item style="border-right: 1.5px solid #DFE9FB">
+        <van-grid-item style="border-right: 1.5px solid #DFE9FB" @click="myWorkList">
           <van-icon size="2rem" name="share-o" />
           <span style="margin-top: 1rem">我发起的</span>
         </van-grid-item>
@@ -58,22 +58,12 @@ export default {
     },
     agencyMatters () {
       this.$router.push({name: 'ApprovalList'})
-      // requestLogin().then((data) => {
-      //   console.log(data)
-      //   console.log(data.status)
-      //   if (data.status === 0) {
-      //     this.$router.push({name: 'hello', params: data})
-      //   } else {
-      //     Dialog.alert({
-      //       message: '密码错误'
-      //     }).then(() => {
-      //       // on close
-      //     })
-      //   }
-      // })
     },
     workList () {
       this.$router.push({name: 'workList'})
+    },
+    myWorkList () {
+      this.$router.push({name: 'myWorkList'})
     }
   }
 }

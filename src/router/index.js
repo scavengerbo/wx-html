@@ -8,6 +8,8 @@ import agencyMatters from '@/components/agencyMatters'
 import ApprovalList from '@/components/ApprovalList'
 import workList from '@/components/workList'
 import approvalWork from '../components/approvalWork'
+import myWork from '../components/myWork'
+import myWorkList from '../components/myWorkList'
 
 Vue.use(Router)
 
@@ -52,6 +54,16 @@ export default new Router({
       path: '/approvalWork',
       name: 'approvalWork',
       component: approvalWork
+    },
+    {
+      path: '/myWork',
+      name: 'myWork',
+      component: myWork
+    },
+    {
+      path: '/myWorkList',
+      name: 'myWorkList',
+      component: myWorkList
     }
   ]
 })
