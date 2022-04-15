@@ -49,8 +49,7 @@
               <div class="detail" @click="approvalWork(approval)">详情</div>
             </div>
             <div class="content-item" v-if="approval.applyInstruction!=''">
-              <div class="label">榜单</div>
-              <div class="detail">{{approval.applyInstruction}}</div>
+              <div class="detail" @click="childWorkList(approval)">{{approval.applyInstruction}}</div>
             </div>
           </div>
         </van-collapse-item>
@@ -77,7 +76,8 @@ export default {
         { text: '审批状态', value: 0 },
         { text: '待审批', value: 1 },
         { text: '审批中', value: 2 },
-        { text: '已审批', value: 3 }
+        { text: '已审批', value: 3 },
+        { text: '打回', value: 4 }
       ],
       users: {},
       value: '', // 搜索关键字
@@ -112,6 +112,10 @@ export default {
     approvalWork (approval) {
       this.approval = approval
       this.$router.push({name: 'myWork', params: {approval: JSON.stringify(this.approval)}})
+    },
+    childWorkList (approval) {
+      this.approval = approval
+      this.$router.push({name: 'childWorkList', params: {approval: JSON.stringify(this.approval)}})
     }
   },
   filters: {
@@ -122,9 +126,13 @@ export default {
         case '1':
           return 'primary'
         case '2':
-          return 'success'
+          return 'primary'
         case '3':
           return 'warning'
+        case '4':
+          return 'warning'
+        case '5':
+          return 'success'
       }
     },
     getStatusText (status) {
@@ -134,9 +142,13 @@ export default {
         case '1':
           return '审批中'
         case '2':
-          return '审批结束'
+          return '审批中'
         case '3':
           return '删除'
+        case '4':
+          return '打回'
+        case '5':
+          return '审批结束'
       }
     }
   }
@@ -204,6 +216,6 @@ export default {
 }
 
 .approval-list .detail {
-  color: rgb(160, 255, 51);
+  color: rgb(51, 177, 255);
 }
 </style>

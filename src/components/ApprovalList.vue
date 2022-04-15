@@ -49,8 +49,7 @@
               <div class="detail" @click="approvalWork(approval)">详情</div>
             </div>
             <div class="content-item" v-if="approval.applyInstruction!=''">
-              <div class="label">榜单</div>
-              <div class="detail">{{approval.applyInstruction}}</div>
+              <div class="detail" @click="childWorkList(approval)">{{approval.applyInstruction}}</div>
             </div>
           </div>
         </van-collapse-item>
@@ -106,6 +105,10 @@ export default {
     approvalWork (approval) {
       this.approval = approval
       this.$router.push({name: 'approvalWork', params: {approval: JSON.stringify(this.approval)}})
+    },
+    childWorkList (approval) {
+      this.approval = approval
+      this.$router.push({name: 'childWorkList', params: {approval: JSON.stringify(this.approval)}})
     }
   },
   filters: {
@@ -119,6 +122,8 @@ export default {
           return 'success'
         case '3':
           return 'warning'
+        case '4':
+          return 'warning'
       }
     },
     getStatusText (status) {
@@ -131,6 +136,8 @@ export default {
           return '审批结束'
         case '3':
           return '删除'
+        case '4':
+          return '打回'
       }
     }
   }
@@ -198,6 +205,6 @@ export default {
 }
 
 .approval-list .detail {
-  color: rgb(160, 255, 51);
+  color: rgb(51, 177, 255);
 }
 </style>

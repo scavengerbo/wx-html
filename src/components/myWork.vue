@@ -1,27 +1,20 @@
 <template>
   <div class="approval-list">
-    <van-search v-model="value" placeholder="请输入搜索关键词" />
-    <div class="filter">
-      <van-dropdown-menu>
-        <van-dropdown-item v-model="dropMenuValue"
-                           :options="option1" />
-        <van-dropdown-item v-model="dropMenuValue2"
-                           :options="option2" />
-      </van-dropdown-menu>
-      <div class="num">数量：<span>{{approvalList.length}}</span></div>
-    </div>
     <main>
+      <div style="padding-top: 1rem;padding-bottom: 1rem;background-color: white">
+      <h3 style="text-align: center">{{this.approval.title}}</h3>
+      </div>
       <van-collapse v-model="activeNames">
         <van-collapse-item :name="approval.id"
                            :key="approval.id + approvalIndex"
-                           v-for="(approval, approvalIndex) in approvalList">
+                           v-for="(approval, approvalIndex) in approvalList" :disabled="approval.workmsg === '' ? true: false">
           <template #title>
             <div>
               <h1>
-                <span>{{approval.usersmsg.workName}}</span>
+                <span>{{approval.usersmsg.username}}</span>
                 <van-tag :type="approval.usersmsg.result |getStatusType">{{approval.usersmsg.result |getStatusText}}</van-tag>
               </h1>
-              <div><span class="label">{{approval.usersmsg.username}} {{approval.usersmsg.createTime}}</span></div>
+              <div><span class="label">时间：{{approval.usersmsg.createTime}}</span></div>
             </div>
           </template>
           <van-form>
@@ -67,22 +60,6 @@
           </van-form>
         </van-collapse-item>
       </van-collapse>
-      <van-popup v-model="showPicker" position="bottom">
-        <van-picker
-          show-toolbar
-          :columns="columns"
-          @confirm="onConfirm"
-          @cancel="showPicker = false"
-        />
-      </van-popup>
-      <van-popup v-model="permShowPicker" position="bottom">
-        <van-picker
-          show-toolbar
-          :columns="permColumn"
-          @confirm="peronConfirm"
-          @cancel="permShowPicker = false"
-        />
-      </van-popup>
     </main>
   </div>
 </template>
@@ -180,6 +157,8 @@ export default {
           return 'warning'
         case '-1':
           return 'success'
+        case '3':
+          return 'warning'
       }
     },
     getStatusText (status) {
@@ -191,7 +170,9 @@ export default {
         case '2':
           return '审批打回'
         case '-1':
-          return '发起审批'
+          return '发起工单'
+        case '3':
+          return '填写工单'
       }
     }
   }

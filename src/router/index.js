@@ -10,6 +10,7 @@ import workList from '@/components/workList'
 import approvalWork from '../components/approvalWork'
 import myWork from '../components/myWork'
 import myWorkList from '../components/myWorkList'
+import childWorkList from '../components/childWorkList'
 
 Vue.use(Router)
 
@@ -64,6 +65,11 @@ export default new Router({
       path: '/myWorkList',
       name: 'myWorkList',
       component: myWorkList
+    },
+    {
+      path: '/childWorkList',
+      name: 'childWorkList',
+      component: childWorkList
     }
   ]
 })

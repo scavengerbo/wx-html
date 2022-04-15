@@ -16,6 +16,16 @@
               :readonly="item.readonly == 1 ? true: false"
             />
             <van-field
+              v-model="this.childpermUser.username"
+              :name="this.childwork.workname"
+              :label="this.childwork.workname"
+              :placeholder="this.childwork.workname"
+              :rules="[{ required: true, message: this.childwork.workname }]"
+              @focus="childshowPicker = true"
+              :readonly="true"
+              v-if="this.childflag === 'Y'"
+            />
+            <van-field
               v-model="this.permUser.username"
               name="审批人"
               label="审批人"
@@ -66,6 +76,14 @@
             @cancel="showPicker = false"
           />
         </van-popup>
+        <van-popup v-model="childshowPicker" position="bottom">
+          <van-picker
+            show-toolbar
+            :columns="childcolumns"
+            @confirm="childonConfirm"
+            @cancel="childshowPicker = false"
+          />
+        </van-popup>
       </div>
     </div>
   </div>
@@ -85,6 +103,9 @@ export default {
     return {
       users: {},
       columns: [],
+      childcolumns: [],
+      childshowPicker: false,
+      childpermUsers: [],
       minDate: new Date(2020, 0, 1),
       maxDate: new Date(2099, 10, 1),
       currentDate: new Date(), // 年月日选择器默认时间
@@ -97,7 +118,10 @@ export default {
       workName: '',
       permUsers: [],
       permUser: {},
-      appLevel: 0
+      appLevel: 0,
+      childflag: 'N',
+      childpermUser: {},
+      childwork: {}
 
       // agencyMatters: [{ name: '请假人', order: 0, type: 1, vl: '某某', readonly: false },
       //   { name: '开始时间', order: 1, type: 3, vl: '2022-03-22', readonly: true },
@@ -117,10 +141,17 @@ export default {
         this.agencyMatters = data.body.workTitle
         this.permUsers = data.body.permUser
         this.columns = []
+        this.childflag = data.body.childflag
         for (let i = 0; i < this.permUsers.length; i++) {
           this.columns.push(this.permUsers[i].uuid + '--' + this.permUsers[i].name)
         }
-        console.log('this.columns---' + this.columns)
+        if (this.childflag === 'Y') {
+          this.childpermUsers = data.body.permChild
+          this.childwork = data.body.childWork
+          for (let i = 0; i < this.childpermUsers.length; i++) {
+            this.childcolumns.push(this.childpermUsers[i].uuid + '--' + this.childpermUsers[i].name)
+          }
+        }
       } else {
         Dialog.alert({
           message: '异常'
@@ -155,7 +186,9 @@ export default {
         status: status,
         workConts: this.agencyMatters,
         permUserID: this.permUser.userid,
-        appLevel: this.appLevel}
+        appLevel: this.appLevel,
+        childpermUserID: this.childpermUser.userid,
+        childflag: this.childflag}
       console.log('work_params==>>>', workparams)
       axios({
         headers: {
@@ -171,6 +204,7 @@ export default {
             message: '提交成功'
           }).then(() => {
             // on close
+            this.$router.push({name: 'hello'})
           })
         } else {
           Dialog.alert({
@@ -180,22 +214,12 @@ export default {
           })
         }
       })
-      // sumbitWorkOrder(workparams).then((data) => {
-      //   console.log(data)
-      //   if (data.status === 0) {
-      //     Dialog.alert({
-      //       message: '提交成功'
-      //     }).then(() => {
-      //       // on close
-      //     })
-      //   } else {
-      //     Dialog.alert({
-      //       message: '提交失败'
-      //     }).then(() => {
-      //       // on close
-      //     })
-      //   }
-      // })
+    },
+    childonConfirm (value) {
+      this.childshowPicker = false
+      console.log(value)
+      this.childpermUser = {userid: value.split('--')[0], username: value.split('--')[1]}
+      console.log(this.childpermUser)
     },
     onConfirm (value) {
       this.showPicker = false

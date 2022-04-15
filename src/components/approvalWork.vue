@@ -1,19 +1,22 @@
 <template>
   <div class="approval-list">
     <div style="width: 100%">
-      <div style="margin-top: 0.2rem">
+      <div>
         <main>
+          <div style="padding-top: 1rem;padding-bottom: 1rem;background-color: white">
+            <h3 style="text-align: center">{{this.approval.title}}</h3>
+          </div>
           <van-collapse v-model="activeNames">
             <van-collapse-item :name="approval.id"
                                :key="approval.id + approvalIndex"
-                               v-for="(approval, approvalIndex) in approvalList">
+                               v-for="(approval, approvalIndex) in approvalList" :disabled="approval.workmsg === '' ? true: false">
               <template #title>
                 <div>
                   <h1>
-                    <span>{{approval.usersmsg.workName}}</span>
-                    <van-tag :type="approval.usersmsg.result |getStatusType">{{approval.usersmsg.result |getStatusText}}</van-tag>
+                    <span>{{approval.usersmsg.username}}</span>
+                    <van-tag :type="approval.usersmsg |getStatusType">{{approval.usersmsg |getStatusText}}</van-tag>
                   </h1>
-                  <div><span class="label">{{approval.usersmsg.username}} {{approval.usersmsg.createTime}}</span></div>
+                  <div><span class="label">时间：{{approval.usersmsg.createTime}}</span></div>
                 </div>
               </template>
                           <van-form>
@@ -26,6 +29,7 @@
                                 :label="item.name"
                                 :placeholder="item.name"
                                 :rules="[{ required: true, message: item.name }]"
+                                @focus="inputFocus(item,index)"
                                 :readonly="item.readonly == 1 ? true: false"
                               />
                               <div v-if="approval.workflag === 'W'">
@@ -34,18 +38,17 @@
                                     name="审批结果"
                                     label="审批结果"
                                     placeholder="审批结果"
-                                    :rules="[{ required: true, message: '审批结果' }]"
                                     @focus="permShowPicker = true"
                                     :readonly="true"
+                                    v-if="approval.usersmsg.result!=='3'"
                                   />
                                 <div v-if="approval.permflag === 'Y'">
-                                  <div v-if="permResult === '通过'">
+                                  <div v-if="permResult === '通过' || approval.usersmsg.result==='3'">
                                     <van-field
                                       v-model="permUser.username"
                                       name="下一级审批人"
                                       label="下一级审批人"
                                       placeholder="下一级审批人"
-                                      :rules="[{ required: true, message: '下一级审批人' }]"
                                       @focus="showPickerM(approval)"
                                       :readonly="true"
                                     />
@@ -59,6 +62,28 @@
                           </van-form>
             </van-collapse-item>
           </van-collapse>
+          <van-popup v-model="isDatePickerShow" position="bottom">
+            <van-datetime-picker
+              v-model="currentDate"
+              type="datetime"
+              title="年月日时分"
+              :min-date="minDate"
+              :max-date="maxDate"
+              @confirm="dateConfirm"
+              @cancel="isDatePickerShow = false"
+            />
+          </van-popup>
+          <van-popup v-model="isDatePickerShowMore" position="bottom">
+            <van-datetime-picker
+              v-model="currentDate"
+              type="date"
+              title="年月日时分"
+              :min-date="minDate"
+              :max-date="maxDate"
+              @confirm="dateConfirmD"
+              @cancel="isDatePickerShowMore = false"
+            />
+          </van-popup>
           <van-popup v-model="showPicker" position="bottom">
             <van-picker
               show-toolbar
@@ -100,7 +125,12 @@ export default {
       permUser: {},
       permResult: '',
       permColumn: ['通过', '打回'],
-      permShowPicker: false
+      permShowPicker: false,
+      minDate: new Date(2020, 0, 1),
+      maxDate: new Date(2099, 10, 1),
+      currentDate: new Date(), // 年月日选择器默认时间
+      isDatePickerShow: false, // 是否拉起年月日选择器
+      isDatePickerShowMore: false
     }
   },
   activated () {
@@ -108,7 +138,7 @@ export default {
     this.users = JSON.parse(window.sessionStorage.getItem('users'))
     this.approval = JSON.parse(this.$route.params.approval)
     // this.users.body.userid  this.approval.voucher this.approval.approcalLevel
-    let param = {'approcalLevel': this.approval.approcalLevel, voucher: this.approval.voucher, userid: this.users.body.userid}
+    let param = {'approcalLevel': this.approval.approcalLevel, voucher: this.approval.voucher, userid: this.users.body.userid, preappr: this.approval.preappr}
     console.log(this.users)
     console.log(this.approval)
     approvalWork(param).then((data) => {
@@ -144,7 +174,7 @@ export default {
       this.permResult = value
     },
     submit (approval) {
-      let param = {'approval': approval, 'permResult': this.permResult === '通过' ? 1 : 2, 'permUser': this.permUser}
+      let param = {'approval': approval, 'permResult': this.permResult === '' ? 3 : (this.permResult === '通过' ? 1 : 2), 'permUser': this.permUser}
       console.log(param)
       axios({
         headers: {
@@ -160,6 +190,7 @@ export default {
             message: '提交成功'
           }).then(() => {
             // on close
+            this.$router.push({name: 'hello'})
           })
         } else {
           Dialog.alert({
@@ -169,11 +200,50 @@ export default {
           })
         }
       })
+    },
+    // input触发时判断
+    inputFocus (item, index) {
+      console.log('inputFocus==>>')
+      this.agencyItem = item
+      // item.vl = 'a'
+      if (item.type === 3) {
+        // 日期选择器
+        this.isDatePickerShow = true
+      } else if (item.type === 4) {
+        // 时间选择器
+        this.isDatePickerShowMore = true
+      } else if (item.type === 5) {
+        this.showPicker = true
+      }
+    },
+    dateConfirm (value) {
+      this.isDatePickerShow = false
+      this.agencyItem.vl = this.getDateYS(value)
+    },
+    dateConfirmD (value) {
+      this.isDatePickerShowMore = false
+      this.agencyItem.vl = this.getDateYD(value)
+    },
+    timeAdd0 (str) {
+      var arr = str + ''
+      if (arr.length <= 1) {
+        arr = '0' + arr
+      }
+      return arr
+    },
+    getDateYS (date) {
+      return this.timeAdd0(date.getFullYear()) + '-' +
+        this.timeAdd0((date.getMonth() + 1)) + '-' + this.timeAdd0((date.getDate())) +
+        ' ' + this.timeAdd0((date.getHours())) + ':' + this.timeAdd0((date.getMinutes()))
+    },
+    getDateYD (date) {
+      return this.timeAdd0(date.getFullYear()) + '-' +
+        this.timeAdd0((date.getMonth() + 1)) + '-' + this.timeAdd0((date.getDate()))
     }
   },
   filters: {
     getStatusType (status) {
-      switch (status) {
+      switch (status.result) {
         case '0':
           return 'primary'
         case '1':
@@ -182,10 +252,12 @@ export default {
           return 'warning'
         case '-1':
           return 'success'
+        case '3':
+          return 'warning'
       }
     },
     getStatusText (status) {
-      switch (status) {
+      switch (status.result) {
         case '0':
           return '审批中'
         case '1':
@@ -193,7 +265,9 @@ export default {
         case '2':
           return '审批打回'
         case '-1':
-          return '发起审批'
+          return '发起工单'
+        case '3':
+          return '填写工单'
       }
     }
   }
