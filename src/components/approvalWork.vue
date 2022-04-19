@@ -7,8 +7,8 @@
             <h3 style="text-align: center">{{this.approval.title}}</h3>
           </div>
           <van-collapse v-model="activeNames">
-            <van-collapse-item :name="approval.id"
-                               :key="approval.id + approvalIndex"
+            <van-collapse-item :name="approvalIndex"
+                               :key="approval.usersmsg.w_id + approvalIndex"
                                v-for="(approval, approvalIndex) in approvalList" :disabled="approval.workmsg === '' ? true: false">
               <template #title>
                 <div>

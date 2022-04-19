@@ -14,8 +14,8 @@
     <main>
 
       <van-collapse v-model="activeNames">
-        <van-collapse-item :name="approval.id"
-                           :key="approval.id + approvalIndex"
+        <van-collapse-item :name="approval.voucher"
+                           :key="approval.voucher + approvalIndex"
                            v-for="(approval, approvalIndex) in approvalList">
           <!-- 自定义折叠头部模板 -->
           <template #title>

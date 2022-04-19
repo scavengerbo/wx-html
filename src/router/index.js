@@ -11,6 +11,7 @@ import approvalWork from '../components/approvalWork'
 import myWork from '../components/myWork'
 import myWorkList from '../components/myWorkList'
 import childWorkList from '../components/childWorkList'
+import test from '../components/test'
 
 Vue.use(Router)
 
@@ -70,6 +71,11 @@ export default new Router({
       path: '/childWorkList',
       name: 'childWorkList',
       component: childWorkList
+    },
+    {
+      path: '/test',
+      name: 'test',
+      component: test
     }
   ]
 })

@@ -51,6 +51,21 @@ export default {
       }
     }
   },
+  // activated () {
+  //   let useragent = navigator.userAgent
+  //   if (useragent.indexOf('MicroMessenger') !== -1) {
+  //     Dialog.alert({
+  //       message: '请在右上角菜单选择用本地浏览器打开'
+  //     }).then(() => {
+  //       // on close
+  //       var opened = window.open('about:blank', '_self')
+  //
+  //       opened.opener = null
+  //
+  //       opened.close()
+  //     })
+  //   }
+  // },
   methods: {
     register () {
       this.$router.push({
